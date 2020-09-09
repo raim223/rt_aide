@@ -1,0 +1,4 @@
+{
+    "rt_linux": "preempt-rt", 
+    "rt_skin": null
+}
