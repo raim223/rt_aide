@@ -3,21 +3,40 @@
 
 #######################################################################################################
 CUR_DIR = ./
-CFLAGS_OPTIONS = -Wall -O3 -mtune=native -flto
-# CFLAGS_OPTIONS = -Wall -O3 -flto 
+
+# json parser 
+CONFIGS_PATH=$(RT_AIDE_ROOT_PATH)/configs
+CONFIGS_FULL_PATH=$(CONFIGS_PATH)/config.json
+define GetFromJson
+$(shell node -p "require('$(CONFIGS_FULL_PATH)').$(1)")
+endef
 
 INC_EMBD = $(CUR_DIR)/libs/embedded
 INC_DIRS = -I$(CUR_DIR) -I$(INC_EMBD) 
 
-RT_DOMAIN ?= xenomai
-ifeq ($(RT_DOMAIN),xenomai)
-XENOMAI_PATH=/usr/xenomai
-INC_XENO = $(shell $(XENOMAI_PATH)/bin/xeno-config --skin alchemy --cflags) 
-LIB_XENO = $(shell $(XENOMAI_PATH)/bin/xeno-config --skin native --ldflags) 
-endif
+CFLAGS_OPTIONS = -Wall -O3 -mtune=native -flto
+CFLAGS   = $(CFLAGS_OPTIONS) $(INC_DIRS)
+LDFLAGS	 = -lm
 
-CFLAGS   = $(CFLAGS_OPTIONS) $(INC_DIRS) $(INC_XENO)    
-LDFLAGS	 = -lm -lrt -lpthread $(LIB_XENO)  
+RT_DOMAIN = $(call GetFromJson, rt_linux)
+
+ifeq ($(RT_DOMAIN),xenomai)
+XENOMAI_SKIN = $(call GetFromJson, rt_skin) 
+XENOMAI_PATH?=/usr/xenomai
+ifeq ($(XENOMAI_SKIN),posix)
+INC_XENO = $(shell $(XENOMAI_PATH)/bin/xeno-config --skin posix --cflags) 
+LIB_XENO = $(shell $(XENOMAI_PATH)/bin/xeno-config --skin posix --ldflags) 
+else # alchemy as default
+INC_XENO = $(shell $(XENOMAI_PATH)/bin/xeno-config --skin alchemy --cflags) 
+LIB_XENO = $(shell $(XENOMAI_PATH)/bin/xeno-config --skin aclhemy --ldflags)
+CFLAGS += -D__XENOMAI_NATIVE__ 
+endif
+CFLAGS += $(INC_XENO) 
+LDFLAGS += $(LIB_XENO) 
+else
+# CFLAGS   += $(CFLAGS_OPTIONS) $(INC_DIRS) $(INC_XENO)
+LDFLAGS	 += -lm -lrt -lpthread
+endif
 
 SOURCES	+= main.c 			
 SOURCES	+= $(INC_EMBD)/src/rt_tasks.c
@@ -94,6 +113,9 @@ re:
 	@touch ./* $(INC_EMBD)/src/* 
 	make clean
 	make 
+
+test:
+	@echo $(RT_DOMAIN)
 
 
 .PHONY: all clean 

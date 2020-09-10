@@ -129,7 +129,7 @@ int pt_task_start(PT_TASK* task,void (*entry)(void *arg), void * arg)
 			TASK_DBG(task->s_mode,"set name failed for thread '%s', err=%d\n", task->name, err);
 			return -EPTHNAME;
 		}
-		TASK_DBG(task->s_mode,"Created thread '%s' period=%lu ns ok.\n", task->name, task->period);
+		// TASK_DBG(task->s_mode,"Created thread '%s' period=%lu ns ok.\n", task->name, task->period);
 	}
 		return 0;
 }
@@ -161,7 +161,7 @@ void pt_task_wait_period(PT_TASK *task)
 /*****************************************************************************/
 PRTIME pt_timer_read(void){
 	struct timespec probe;
-	PRTIME ret;
+	// PRTIME ret;
 	if (clock_gettime(CLOCK_TO_USE,&probe))
 		{
 			printf("Failed to clock_gettime probe\n" );
@@ -191,7 +191,7 @@ struct timespec NS2TIMESPEC(uint64_t nanosecs)
 }
 PRTIME pt_timer_ns2ticks(PRTIME ticks)
 {
-
+	return ticks;
 }
 /*****************************************************************************/
 void pt_task_delete(void)

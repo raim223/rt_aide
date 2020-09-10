@@ -5,27 +5,24 @@
 #include <string.h>
 /*****************************************************************************/
 #define DEFAULT_TASK_STKSIZE 0
-#ifdef _XENOMAI_TASKS_
-#define DEFAULT_TASK_MODE T_WARNSW // detect mode switching
-#else
-#define DEFAULT_TASK_MODE RT
-#endif
-int _create_rt_task(RT_TASK *task, char *name, int stksize, int prio, int mode);
+int _create_rt_task(RT_TASK *task, char *name, int stksize, int prio);
 int _set_rt_task_period(RT_TASK *task, SRTIME period);
 /*
 ****************************************************************************/
-int _create_rt_task(RT_TASK *task, char *name, int stksize, int prio, int mode) {
+int _create_rt_task(RT_TASK *task, char *name, int stksize, int prio) {
 	int ret = -1;
 	char str[1024]={0,};
 
 #ifdef _XENOMAI_TASKS_
-	ret = rt_task_create(task, name, stksize*1024, prio, mode);
+	ret = rt_task_create(task, name, stksize*1024, prio, 0);
 #else
-	ret = pt_task_create(task,name,stksize,prio, (PT_MODE)mode);
+	if (prio == 0)
+		ret = pt_task_create(task,name,stksize,prio, NRT);
+	else
+		ret = pt_task_create(task,name,stksize,prio, RT);
 #endif
-
 	if (ret != 0) {
-		snprintf(str, sizeof(str), "[ERROR] Failed to create RTtask \"%s\",%d", name, ret);
+		snprintf(str, sizeof(str), "[ERROR] Failed to create task \"%s\",%d", name, ret);
 		perror(str);
 	}
 	return ret;
@@ -57,7 +54,11 @@ int _set_rt_task_period(RT_TASK *task, SRTIME period) {
 }
 /*****************************************************************************/
 int create_rt_task(RT_TASK *task, char *name, int prio) {
-	return _create_rt_task(task, name, DEFAULT_TASK_STKSIZE, prio, DEFAULT_TASK_MODE);
+	return _create_rt_task(task, name, DEFAULT_TASK_STKSIZE, prio);
+}
+/*****************************************************************************/
+int create_nrt_task(RT_TASK *task, char *name) {
+	return _create_rt_task(task, name, DEFAULT_TASK_STKSIZE, 0);
 }
 /*****************************************************************************/
 int set_rt_task_period(RT_TASK *task, RTIME period) {
@@ -66,9 +67,9 @@ int set_rt_task_period(RT_TASK *task, RTIME period) {
 /*****************************************************************************/
 void wait_rt_period(RT_TASK *task)
 {
+#ifdef _XENOMAI_TASKS_
 	int ret = -1;
 	char str[1024]={0,};
-#ifdef _XENOMAI_TASKS_
 	unsigned long overruns_cnt;
 	ret = rt_task_wait_period(&overruns_cnt);
 	if (ret != 0) {
@@ -116,9 +117,9 @@ int start_rt_task(int enable, RT_TASK *task, void (*fun)(void *cookie)) {
 /****************************************************************************/
 void delete_rt_task(void)
 {
+#ifdef _XENOMAI_TASKS_
 	int ret = -1;
 	char str[1024]={0,};
-#ifdef _XENOMAI_TASKS_
 	ret = rt_task_suspend(NULL);
 	if (ret != 0) {
 		snprintf(str, sizeof(str), "[ERROR] Failed to suspend rt task %d", ret);

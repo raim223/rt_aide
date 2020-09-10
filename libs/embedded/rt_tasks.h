@@ -27,6 +27,7 @@
 /* Real-time Task */
 /*****************************************************************************/
 int create_rt_task(RT_TASK *task, char *name, int prio);
+int create_nrt_task(RT_TASK *task, char *name);
 int set_rt_task_period(RT_TASK *task, RTIME period);
 int start_rt_task(int enable, RT_TASK *task, void (*fun)(void *cookie));
 void wait_rt_period(RT_TASK *task);

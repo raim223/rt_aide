@@ -33,7 +33,7 @@ typedef enum {FALSE = 0, TRUE,false = 0, true,False = 0, True,} bool;
 #define cpu_relax() __sync_synchronize()
 #endif
 
-#if defined (__COBALT__)
+#if defined (__XENOMAI_NATIVE__)
 #define _XENOMAI_TASKS_
 #endif
 
