@@ -4,8 +4,8 @@
  *  2016 Raimarius Delgado
 */
 /****************************************************************************/
-#ifndef EMBD_COMMON_H
-#define EMBD_COMMON_H
+#ifndef _EMBD_COMMON_H_
+#define _EMBD_COMMON_H_
 /****************************************************************************/
 /* Scaling Macros */
 #define SCALE_1K		(1000)
@@ -19,7 +19,7 @@
 
 
 typedef enum{OFF = 0, ON, off = 0, on, }FLAG;
-typedef enum {FALSE = 0, TRUE,false = 0, true,False = 0, True,} bool;
+// typedef enum {FALSE = 0, TRUE,false = 0, true,False = 0, True,} bool;
 
 #define NSEC_PER_USEC (SCALE_1K)
 #define NSEC_PER_MSEC (SCALE_1M)
@@ -27,7 +27,6 @@ typedef enum {FALSE = 0, TRUE,false = 0, true,False = 0, True,} bool;
 
 /* assuming that one tick is 1 nanosecond */
 #define TICKS_PER_SEC(x)	(NSEC_PER_SEC/(x))
-
 
 #ifndef cpu_relax
 #define cpu_relax() __sync_synchronize()
@@ -44,4 +43,4 @@ typedef enum
 } TASK_TYPE;
 
 /****************************************************************************/
-#endif // EMBD_COMMON_H
+#endif // _EMBD_COMMON_H_

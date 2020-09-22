@@ -1,4 +1,4 @@
 {
-    "rt_linux": "preempt-rt", 
-    "rt_skin": null
+    "rt_linux": "xenomai", 
+    "rt_skin": "native"
 }

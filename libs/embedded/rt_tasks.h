@@ -10,8 +10,8 @@
 #include "embdCOMMON.h"
 
 #ifdef _XENOMAI_TASKS_
-	#include <alchemy/task.h> //native -> alchemy
-	#include <alchemy/timer.h> //native -> alchemy
+	#include <alchemy/task.h> 
+	#include <alchemy/timer.h> 
 	#define printf rt_printf
 #else
 	#include "rt_posix_task.h"
@@ -24,13 +24,22 @@
 	#define rt_timer_ns2ticks pt_timer_ns2ticks
 #endif
 /*****************************************************************************/
-/* Real-time Task */
+/* Real-time Task and Timers */
 /*****************************************************************************/
-int create_rt_task(RT_TASK *task, char *name, int prio);
-int create_nrt_task(RT_TASK *task, char *name);
-int set_rt_task_period(RT_TASK *task, RTIME period);
-int start_rt_task(int enable, RT_TASK *task, void (*fun)(void *cookie));
-void wait_rt_period(RT_TASK *task);
-void delete_rt_task(void);
-void print_xeno_skin(void);
-#endif //_RT_TASK_H_
+#ifdef __cplusplus
+extern "C" {
+#endif
+int	aide_create_rt_task(RT_TASK *task, const char *name, int prio);
+int	aide_create_nrt_task(RT_TASK *task, const char *name);
+int aide_set_task_period(RT_TASK *task, RTIME period);
+int aide_start_task(int enable, RT_TASK *task, void (*entry)(void *arg), void* arg);
+int aide_start_task_noarg(int enable, RT_TASK *task, void (*entry)(void *arg));
+int aide_wait_period(unsigned long *overruns_cnt);
+int aide_suspend_task(RT_TASK* task);
+int aide_delete_task(RT_TASK* task);
+#ifdef __cplusplus
+}
+#endif 
+
+
+#endif //_RT_TASKS_H_

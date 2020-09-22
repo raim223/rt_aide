@@ -4,8 +4,8 @@
  *  2016 Raimarius Delgado
 */
 /****************************************************************************/
-#ifndef EMBD_MATH_H
-#define EMBD_MATH_H
+#ifndef _EMBD_MATH_H_
+#define _EMBD_MATH_H_
 /****************************************************************************/
 #include <stdio.h>
 #include <math.h>
@@ -135,6 +135,6 @@ MATH_STATS GetStatistics(int ArraySample[], int ArraySize,int Scaling){
 	return GetStats;
 }
 /****************************************************************************/
-#endif //EMBD_MATH_H
+#endif //_EMBD_MATH_H_
 
 

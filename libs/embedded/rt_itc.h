@@ -1,12 +1,18 @@
 #ifndef _RT_ITC_H_
 #define _RT_ITC_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 /*****************************************************************************/
 /* RT_TASKS */
 /*****************************************************************************/
+
+
 #include "embdCOMMON.h"
 #include "rt_tasks.h"
 
@@ -24,4 +30,7 @@ int create_rt_mutex(RT_MUTEX *mutex, char *name);
 int delete_rt_mutex(RT_MUTEX *mutex);
 int acquire_rt_mutex(RT_MUTEX *mutex);
 int release_rt_mutex(RT_MUTEX *mutex);
+#ifdef __cplusplus
+}
+#endif 
 #endif // _RT_ITC_H_

@@ -31,7 +31,7 @@ RT_TASK TskTest1;
 
 #define TASK_1_PRIO		(99) // highest priority  
 #define TASK_1_PRD		(1000000000) // 1 second period
-char *sTaskName1 = "task_1";
+const char *sTaskName1 = "task_1";
 FLAG bQuitFlag = off;
 /*****************************************************************************/
 /* function macros */
@@ -43,6 +43,9 @@ void SignalHandler(int signum);
 void TestTask1(void *arg){
 	RTIME rtmPrdCurr=0, rtmPrdPrev=0; 
 	int tmPrd=0;
+
+	RT_TASK_INFO info;
+	rt_task_inquire(NULL, &info);
 	
 	rtmPrdPrev = rt_timer_read();
 	while (1) {
@@ -52,10 +55,16 @@ void TestTask1(void *arg){
 		}else
 			wait_rt_period(&TskTest1);
 
+		RT_TASK_INFO info;
+		rt_task_inquire(NULL, &info);
+
+
 		rtmPrdCurr = rt_timer_read();
 		tmPrd = (int)(rtmPrdCurr - rtmPrdPrev);
 		rtmPrdPrev = rtmPrdCurr;
-		printf("Task Period: %d.%06d\n", tmPrd/1000000000,tmPrd%1000000000);
+		printf("0x%x\n",info.stat.status);
+		printf("%d\n",info.pid);
+		// printf("Task Period: %d.%06d\n", tmPrd/1000000000,tmPrd%1000000000);
 	}
 }
 /****************************************************************************/
@@ -64,6 +73,8 @@ int main(int argc, char **argv){
 	/* Interrupt Handler "ctrl+c"  */
 	signal(SIGTERM, SignalHandler);
 	signal(SIGINT, SignalHandler);
+
+	// void *(*fun)(void *cookie);
 
 	/* RT-tasks */
 	mlockall(MCL_CURRENT|MCL_FUTURE); 
@@ -74,7 +85,6 @@ int main(int argc, char **argv){
 		usleep(1);
 		if (bQuitFlag==ON) break;
 	}
-
 	return 0;
 }
 /****************************************************************************/
@@ -94,7 +104,7 @@ void XenoInit(){
 /****************************************************************************/
 void XenoStart(){
 	printf("Starting Real-time Task(s)...");
-	start_rt_task(1,&TskTest1,&TestTask1);
+	start_rt_task_noarg(1,&TskTest1,TestTask1);
 	printf("OK!\n");
 }
 /***************************************************************************/
